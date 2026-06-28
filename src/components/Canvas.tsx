@@ -30,7 +30,14 @@ import {
   type CSSProperties,
   type PointerEvent as RPointerEvent,
 } from "react";
-import type { Edge, FlowNode, NodeStatus, NodeTree, NodeType, Side } from "../types";
+import type {
+  Edge,
+  FlowNode,
+  NodeStatus,
+  NodeTree,
+  NodeType,
+  Side,
+} from "../types";
 import { NODE_H, NODE_W, REQ, TYPE, TYPE_ORDER } from "../data";
 import { anchor, curve, curvePoint } from "../geometry";
 
@@ -153,7 +160,9 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
   // The "a" quick-add type picker. `pickerAt` is the screen position (relative
   // to the canvas) where it should appear — null when closed. `pickerPos` holds
   // the world coords where the chosen node will be dropped.
-  const [pickerAt, setPickerAt] = useState<{ x: number; y: number } | null>(null);
+  const [pickerAt, setPickerAt] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const pickerPos = useRef({ x: 0, y: 0 });
   // Last known pointer position over the canvas (screen + world), so the picker
   // can open at the cursor instead of the viewport centre.
@@ -688,9 +697,7 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
     <main
       // The "panning"/"grouping" classes let CSS disable text selection / change cursor mid-drag.
       className={
-        "canvas" +
-        (panning ? " panning" : "") +
-        (grouping ? " grouping" : "")
+        "canvas" + (panning ? " panning" : "") + (grouping ? " grouping" : "")
       }
       ref={viewportRef}
       onPointerDown={startPan}
@@ -1002,11 +1009,7 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
               setTypePicker(false);
             }}
           />
-          <div
-            className="type-picker"
-            role="dialog"
-            aria-label="Add a step"
-          >
+          <div className="type-picker" role="dialog" aria-label="Add a step">
             <div className="type-picker-title">
               Add a step
               <span className="type-picker-hint">Esc to close</span>
@@ -1019,10 +1022,7 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => pickType(t)}
               >
-                <span
-                  className="tdot"
-                  style={{ background: TYPE[t].color }}
-                />
+                <span className="tdot" style={{ background: TYPE[t].color }} />
                 <span className="type-option-label">{TYPE[t].label}</span>
                 <kbd className="type-option-key">{i + 1}</kbd>
               </button>
