@@ -2219,6 +2219,127 @@ body {
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
+/* ---------- Onboarding tour ----------
+   Spotlight overlay + tooltip card shown the first time a user visits.
+   The dim around the target is produced by a huge box-shadow on .tour-spot,
+   so the highlighted element stays visible/interactive while the rest dims. */
+.tour-mask {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    pointer-events: none;
+}
+/* Full-screen dim, used only for targetless (welcome / done) steps. */
+.tour-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(8, 10, 14, 0.62);
+    backdrop-filter: blur(2px);
+    animation: tour-fade 0.16s ease;
+}
+@keyframes tour-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+/* The clear "hole" punched out of the dim around the current target. */
+.tour-spot {
+    position: absolute;
+    border-radius: 12px;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 0 100vmax rgba(8, 10, 14, 0.62);
+    pointer-events: none;
+    transition:
+        top 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+        left 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+        width 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+        height 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tour-card {
+    position: absolute;
+    visibility: hidden;
+    width: 320px;
+    max-width: calc(100vw - 24px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lift);
+    padding: 14px 14px 12px;
+    pointer-events: auto;
+}
+/* Reveal once measured so it never flashes in the wrong spot. */
+.tour-card.ready {
+    visibility: visible;
+    animation: tour-pop 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tour-card.centered {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Centered cards shouldn't run the pop transform (would fight the centering). */
+    animation: tour-fade 0.16s ease;
+}
+@keyframes tour-pop {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.tour-step {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+}
+.tour-title {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.tour-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+.tour-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+}
+.tour-spacer {
+    flex: 1;
+}
+.tour-skip {
+    border: 0;
+    background: transparent;
+    color: var(--faint);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 6px 4px;
+}
+.tour-skip:hover {
+    color: var(--ink);
+}
+
+/* Light theme: softer overlay suits a light UI. */
+:root[data-theme="light"] .tour-dim {
+    background: rgba(30, 41, 59, 0.4);
+}
+:root[data-theme="light"] .tour-spot {
+    box-shadow: 0 0 0 100vmax rgba(30, 41, 59, 0.4);
+}
+
 /* Smooth token transition when switching themes (respects reduced-motion,
    which disables all transitions globally — see the rule near the top). */
 :root[data-theme] body,

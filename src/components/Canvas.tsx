@@ -157,12 +157,9 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
   const [connectTargetId, setConnectTargetId] = useState<string | null>(null);
   // Index (in `edges`) of the connection currently being hovered for deletion.
   const [hoveredEdge, setHoveredEdge] = useState<number | null>(null);
-  // The "a" quick-add type picker. `pickerAt` is the screen position (relative
-  // to the canvas) where it should appear — null when closed. `pickerPos` holds
-  // the world coords where the chosen node will be dropped.
-  const [pickerAt, setPickerAt] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+  // The "a" quick-add type picker. `typePicker` is whether it's open;
+  // `pickerPos` holds the world coords where the chosen node will be dropped.
+  const [typePicker, setTypePicker] = useState(false);
   const pickerPos = useRef({ x: 0, y: 0 });
   // Last known pointer position over the canvas (screen + world), so the picker
   // can open at the cursor instead of the viewport centre.
@@ -393,7 +390,7 @@ const Canvas = forwardRef<CanvasHandle, Props>(function Canvas(
      keys 1..N select an option, Escape closes. Ignored while typing in a
      field, while a modal is open, or mid-drag. */
   /** Opens the picker, recording the viewport-centre world coords to drop at. */
-  const setTypePicker = useCallback(() => {
+  const openTypePicker = useCallback(() => {
     const vp = viewportRef.current;
     if (!vp) return;
     const rect = vp.getBoundingClientRect();

@@ -10,9 +10,11 @@ interface Props {
   onToggleMenu: () => void;
   theme: Theme;
   onToggleTheme: () => void;
+  /** Re-open the first-visit tutorial (Help button). */
+  onShowTutorial: () => void;
 }
 
-export default function TopBar({ activeFlowName, onToggleMenu, theme, onToggleTheme }: Props) {
+export default function TopBar({ activeFlowName, onToggleMenu, theme, onToggleTheme, onShowTutorial }: Props) {
   return (
     <header className="topbar">
       <button
@@ -51,9 +53,31 @@ export default function TopBar({ activeFlowName, onToggleMenu, theme, onToggleTh
         <b>{activeFlowName ?? "Select a workflow"}</b>
       </div>
       <div className="spacer"></div>
+      {/* Help: replays the first-visit spotlight tour. */}
+      <button
+        className="iconbtn help-btn"
+        data-tour="help"
+        onClick={onShowTutorial}
+        aria-label="Show tutorial"
+        title="Show tutorial"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M9.3 9a2.7 2.7 0 1 1 3.7 2.5c-.8.3-1 .8-1 1.5" />
+          <circle cx="12" cy="16.6" r="0.5" fill="currentColor" />
+        </svg>
+      </button>
       {/* Theme toggle: switches between dark + light CSS themes. */}
       <button
         className="iconbtn theme-toggle"
+        data-tour="theme-toggle"
         onClick={onToggleTheme}
         aria-label={
           theme === "dark" ? "Switch to light theme" : "Switch to dark theme"

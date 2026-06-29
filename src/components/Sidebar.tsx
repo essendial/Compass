@@ -98,7 +98,7 @@ export default function Sidebar({
                             </svg>
                             Folder
                         </button>
-                        <button className="add-btn" onClick={onAddFlow} title="New workflow">
+                        <button className="add-btn" onClick={onAddFlow} title="New workflow" data-tour="new-flow">
                             <svg
                                 viewBox="0 0 24 24"
                                 fill="none"

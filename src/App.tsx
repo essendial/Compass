@@ -21,6 +21,7 @@ import FlowFormModal from "./components/FlowFormModal";
 import ConfirmDialog from "./components/ConfirmDialog";
 import Modal from "./components/Modal";
 import Pathways from "./components/Pathways";
+import Tutorial from "./components/Tutorial";
 import { createSampleFlow } from "./sampleFlow";
 import {
     PATHWAY_TEMPLATES,
@@ -48,6 +49,8 @@ const PANEL_W_KEY = "compass.panelWidth.v1";
 const SIDEBAR_W_KEY = "compass.sidebarWidth.v1";
 /** localStorage key holding the user's preferred colour theme ("dark"|"light"). */
 const THEME_KEY = "compass.theme.v1";
+/** localStorage key marking that the first-visit tutorial has been seen. */
+const TUTORIAL_KEY = "compass.tutorial.v1";
 /** Available UI themes. Dark is the historical default. */
 type Theme = "dark" | "light";
 
@@ -192,6 +195,9 @@ export default function App() {
     const [hintHidden, setHintHidden] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [modal, setModal] = useState<ModalState | null>(null);
+    // First-visit spotlight tour. Auto-opens once per browser (unless already
+    // seen); can be replayed any time via the TopBar Help button.
+    const [tutorialOpen, setTutorialOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(
         () =>
             typeof window !== "undefined" &&
@@ -255,6 +261,32 @@ export default function App() {
         }
         document.documentElement.dataset.theme = theme;
     }, [theme]);
+
+    /* First visit: auto-open the spotlight tour once, unless the user has
+       already seen/completed/skipped it. A short delay lets the layout settle
+       before we measure target elements. */
+    useEffect(() => {
+        let seen = false;
+        try {
+            seen = localStorage.getItem(TUTORIAL_KEY) === "1";
+        } catch {
+            /* ignore */
+        }
+        if (seen) return;
+        const t = window.setTimeout(() => setTutorialOpen(true), 500);
+        return () => window.clearTimeout(t);
+    }, []);
+
+    /** Closes the tour and records that it's been seen so it won't auto-show again. */
+    const closeTutorial = useCallback((completed: boolean) => {
+        setTutorialOpen(false);
+        try {
+            localStorage.setItem(TUTORIAL_KEY, "1");
+        } catch {
+            /* ignore */
+        }
+        void completed;
+    }, []);
 
     /* Track whether the viewport is mobile-width (drives sidebar scrim behaviour). */
     useEffect(() => {
@@ -937,6 +969,7 @@ export default function App() {
                 onToggleMenu={handleToggleMenu}
                 theme={theme}
                 onToggleTheme={handleToggleTheme}
+                onShowTutorial={() => setTutorialOpen(true)}
             />
             <div className="body">
                 {/* Left: collapsible sidebar wrapping the file outliner tree. */}
@@ -1274,6 +1307,9 @@ export default function App() {
                         </Modal>
                     );
                 })()}
+
+            {/* First-visit spotlight tour (auto-shows once; replay via Help). */}
+            <Tutorial open={tutorialOpen} onClose={closeTutorial} />
         </div>
     );
 }
